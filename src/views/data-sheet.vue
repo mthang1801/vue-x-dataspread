@@ -45,7 +45,6 @@ export default {
             len: 20,
           },
         });
-        console.log(this.editor);
         this.editor.loadData(data).change((data) => {
           if (this.editor) {
             this.internalChange = true;
@@ -63,7 +62,6 @@ export default {
                   rows[row] += "\n";
                 }
               }
-              console.log((this.csvContent += rows.join(",")));
               this.csvContent += rows.join(",");
             });
           }
@@ -84,16 +82,12 @@ export default {
       this.editor.loadData(this.dataSheet);
     },
   },
-  watch: {
-    csvContent(val) {
-      console.log(val);
-    },
-  },
   mounted() {
     this.initTable({ ...this.dataSheet });
   },
   beforeRouteLeave(to, from, next) {
-    if (!this.oldDataSheet || !Object.entries(this.dataSheet).length) {
+    console.log(Object.entries(this.dataSheet).length);
+    if (!this.oldDataSheet && !Object.entries(this.dataSheet).length) {
       return next();
     }
     const answer = window.confirm(
