@@ -4,7 +4,10 @@
       <h1>Data Sheet</h1>
       <button type="button" @click="onSave">Save</button>
       <button type="button" @click="onRestore">Restore</button>
-      <a :href="csvContent" download="download.csv">Download here</a>
+      <a :href="csvContent" download="download.csv" @click="onDownload"
+        >Download here</a
+      >
+      <button type="button" @click="onClear">Clear All</button>
     </div>
 
     <div style="display: flex" ref="dataSpread">
@@ -52,17 +55,6 @@ export default {
             this.$nextTick(() => {
               this.internalChange = false;
               this.dataSheet = { ...data };
-              const parseData = JSON.parse(JSON.stringify(data));
-              let rows = [];
-              for (let [row, cells] of Object.entries(parseData.rows)) {
-                for (let cell of Object.values(cells)) {
-                  rows[row] = Object.values(cell)
-                    .map((cellItem) => cellItem.text)
-                    .join(",");
-                  rows[row] += "\n";
-                }
-              }
-              this.csvContent += rows.join(",");
             });
           }
         });
@@ -80,6 +72,28 @@ export default {
       this.dataSheet = JSON.parse(this.oldDataSheet);
 
       this.editor.loadData(this.dataSheet);
+    },
+    onDownload() {
+      this.csvContent = "data:text/csv;charset=utf-8,";
+      const parseData = JSON.parse(JSON.stringify(this.dataSheet));
+      let rows = [];
+      for (let [row, cells] of Object.entries(parseData.rows)) {
+        for (let cell of Object.values(cells)) {
+          rows[row] = Object.values(cell)
+            .map((cellItem) => cellItem.text)
+            .join(",");
+          rows[row] += "\n";
+        }
+        console.log(rows);
+      }
+      this.csvContent += rows.join(",");
+    },
+    onClear() {
+      this.editor.loadData({});
+      this.internalChange = false;
+      this.dataSheet = {};
+      this.oldDataSheet = null;
+      this.csvContent = "data:text/csv;charset=utf-8,";
     },
   },
   mounted() {
